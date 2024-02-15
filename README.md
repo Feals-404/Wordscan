@@ -7,7 +7,6 @@ Wordscan is a tool to scan a Wordpress to find its version and quickly identify 
 - Stop scanning
 - Download Plugins & Themes lists
 - Add Oembed SSRF Check
-- Add wpconfig file backup
 - Scan display (With Cool looking)
 
 ## Install

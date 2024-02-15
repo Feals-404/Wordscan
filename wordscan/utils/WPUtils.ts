@@ -223,8 +223,32 @@ class WordPressScanner {
     return false;
   }
 
-  private async isWPConfig(url: string): Promise<boolean> { //NOT DONE
-    return true
+  private async isWPConfig(url: string): Promise<boolean> {
+    const paths = ['/wp-config.php', '/wp-config.inc', '/wp-config.old', '/wp-config.txt', '/wp-config.php~', '/config.php.zip', '/config.php.new', '/wp-config.php.bk', '/wp-config.backup',
+      '/config.php.tar.gz', '/wp-config.php.txt', '/wp-config.php.bak', '/wp-config.php.BAK', '/wp-config.php.old', '/wp-config.php.OLD', '/wp-config.php.dist', '/wp-config.php.inc', 
+      '/wp-config.php.swp', '/wp-config.php.html', '/.wp-config.php.swp', '/wp-config.php.save', '/wp-config.php.SAVE', '/wp-config.php.orig', '/wp-config.php_orig',
+      '/wp-config-sample.php', '/wp-config-backup.txt', '/wp-config.php-backup', '/common/config.php.new', '/wp-config.php.original', '/_wpeprivate/config.json'];
+  
+    const requiredFields = ["DB_NAME", "DB_PASSWORD", "DBNAME", "PASSWORD", "DB_USERNAME", "DB_PASSWORD"];
+  
+    for (const path of paths) {
+      try {
+        const response = await this.axiosInstance.get(`${url}${path}`);
+  
+        if (
+          response.status === 200 &&
+          requiredFields.some(field => response.data.includes(field))
+        ) {
+          return true;
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          // console.error('Error checking WordPress WPCONFIG:', error.message);
+        }
+      }
+    }
+  
+    return false;
   }
 
   private async isDebugLog(url: string): Promise<boolean> {
@@ -507,6 +531,9 @@ class WordPressScanner {
       const iswplogin = await this.isWpLogin(url);
       await this.updateScanResult(scanId, { iswplogin });
 
+      const iswpconfig = await this.isWPConfig(url);
+      await this.updateScanResult(scanId, { iswpconfig });
+
       const isregisterenable = await this.isRegisterEnable(url);
       await this.updateScanResult(scanId, { isregisterenable });
 
@@ -519,13 +546,13 @@ class WordPressScanner {
       const users = await this.getUsers(url);
       await this.updateScanResult(scanId, { users });
 
-      statut = "Brute force plugins"
+      statut = "Enumerating plugins"
       await this.updateScanResult(scanId, { statut })
       
       const plugins = await this.getPluginsVuln(url);
       await this.updateScanResult(scanId, { plugins });
 
-      statut = "Brute force themes"
+      statut = "Enumerating themes"
       await this.updateScanResult(scanId, { statut })
 
       const themes = await this.getThemeVuln(url);
