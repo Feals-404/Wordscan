@@ -4,8 +4,11 @@ Wordscan is a tool to scan a Wordpress to find its version and quickly identify 
 
 ## Upcoming Features
 
+- Stop scanning
+- Download Plugins & Themes lists
 - Add Oembed SSRF Check
 - Add wpconfig file backup
+- Scan display (With Cool looking)
 
 ## Install
 
@@ -17,6 +20,12 @@ cd Wordscan
 sudo docker compose build
 sudo docker compose up -d
 ```
+
+Go to "http://localhost/"
+
+## Configuration
+
+Don't forget to add your WPScan api tokens before lauching a scan.
 
 ## Legal Disclaimer
 
