@@ -1,0 +1,36 @@
+version: '3'  
+  
+services:  
+  wordscan_mongodb:  
+    image: mongo:latest  
+    container_name: wordscan_mongodb  
+    restart: always  
+    ports:  
+      - "27017:27017"  
+    volumes:  
+      - ./mongodb_data:/data/db  
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro    
+    networks:  
+      - wordscan_network  
+  
+  wordscan:  
+    build:  
+      context: ./wordscan  
+      dockerfile: Dockerfile  
+    container_name: wordscan  
+    restart: always  
+    ports:  
+      - "80:3000"  
+    depends_on:  
+      - wordscan_mongodb  
+    environment:  
+      MONGO_URL: mongodb://wordscan_mongodb:27017/wordscan  
+    networks:  
+      - wordscan_network  
+  
+volumes:  
+  mongodb_data:  
+  
+networks:  
+  wordscan_network:  
+    driver: bridge  
